@@ -8,23 +8,51 @@ This folder contains MCP servers built with the official **Python SDK** (FastMCP
 # From the python-server directory
 uv venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-uv add "mcp[cli]"
+
+# Install dependencies only (no package build)
+uv sync
 ```
 
 ## Current Servers
 
 | Server | Description | Status |
 |--------|-------------|--------|
-| `hello_world.py` | Minimal "Hello World" MCP server | 🟡 Ready for first lecture |
+| `hello_world.py` | Minimal "Hello World" MCP server with 2 tools | ✅ Ready |
 
-## Running a server with MCP Inspector
+## Running the server
 
+### Option 1: Direct run
 ```bash
-# Install inspector globally once
-npx @modelcontextprotocol/inspector
-
-# Then run your server
 uv run python hello_world.py
 ```
 
-Or configure it in Claude Desktop / Cursor.
+### Option 2: With MCP Inspector (recommended for testing)
+```bash
+# In one terminal start the inspector
+npx @modelcontextprotocol/inspector
+
+# Then in another terminal (or through the inspector UI) run:
+uv run python hello_world.py
+```
+
+### Option 3: Claude Desktop / Cursor
+Add this to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "hello-world": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/absolute/path/to/mcp-learning-journey/python-server",
+        "run",
+        "python",
+        "hello_world.py"
+      ]
+    }
+  }
+}
+```
+
+Replace `/absolute/path/to/...` with the real path on your machine.
