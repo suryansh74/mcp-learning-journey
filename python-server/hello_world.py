@@ -1,12 +1,13 @@
 """
 Minimal MCP Server - Hello World
-This is the starting point. We will expand it lecture by lecture.
+Using MCP Python SDK v2 (MCPServer)
 """
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 
 # Create the MCP server instance
-mcp = FastMCP("hello-world")
+mcp = MCPServer("hello-world")
+
 
 @mcp.tool()
 def say_hello(name: str = "World") -> str:
