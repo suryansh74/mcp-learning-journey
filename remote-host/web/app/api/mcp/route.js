@@ -11,6 +11,10 @@ function textOf(result) {
   return result.structuredContent ?? result;
 }
 
+function resourceText(result) {
+  return (result.contents || []).map((block) => block.text ?? JSON.stringify(block));
+}
+
 async function withClient(fn) {
   const url = process.env.MCP_SERVER_URL;
   if (!url) {
@@ -42,6 +46,25 @@ export async function POST(request) {
       return Response.json({ url: process.env.MCP_SERVER_URL, tools });
     }
 
+    if (body.action === "resources") {
+      const resources = await withClient(async (client) => {
+        const listed = await client.listResources();
+        return listed.resources.map((resource) => ({
+          uri: resource.uri,
+          name: resource.name,
+          description: resource.description,
+        }));
+      });
+      return Response.json({ resources });
+    }
+
+    if (body.action === "read") {
+      const result = await withClient((client) =>
+        client.readResource({ uri: body.uri })
+      );
+      return Response.json({ uri: body.uri, text: resourceText(result) });
+    }
+
     if (body.action === "call") {
       const result = await withClient((client) =>
         client.callTool({
@@ -55,7 +78,10 @@ export async function POST(request) {
       });
     }
 
-    return Response.json({ error: "action must be list or call" }, { status: 400 });
+    return Response.json(
+      { error: "action must be list, resources, read, or call" },
+      { status: 400 }
+    );
   } catch (error) {
     return Response.json({ error: String(error) }, { status: 500 });
   }
