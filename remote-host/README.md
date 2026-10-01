@@ -3,58 +3,31 @@
 Two pieces:
 
 - `server/` — Python MCP server in Docker. Speaks Streamable HTTP on port 8000.
-- `web/` — Next.js host. Its server route is the MCP client. It connects to `MCP_SERVER_URL`.
+- `web/` — Next.js host. Its server route is the MCP client.
 
-No login yet. Paste a URL, then call tools.
+No login yet.
+
+## One command
+
+From `remote-host/`:
+
+```bash
+git pull
+docker compose up --build
+```
+
+Then open http://localhost:3000.
+
+You do not need `npm run dev`. The `web` container is the Next.js app. It calls the MCP server at `http://mcp:8000/mcp` on the Compose network, so you do not paste a URL.
+
+- UI: http://localhost:3000
+- MCP on this machine: http://localhost:8000/mcp
+- Public MCP URL: the `https://....trycloudflare.com` line in the `tunnel` logs, plus `/mcp`
+
+The tunnel is only for a client that is not in this Compose file. Stop it with Compose when you are done. A new run gets a new tunnel hostname.
 
 ## What replaces ngrok
 
-Docker alone only publishes a port on the machine it runs on (`http://YOUR_IP:8000/mcp`). That IP works on your LAN. It is not a public internet address.
+Docker publishes port 8000 on your machine. That is a LAN address, not a public one.
 
-The `tunnel` service is the ngrok stand-in. It is `cloudflared` with a free quick tunnel (no account, no custom domain). When it starts, the logs print a public `https://....trycloudflare.com` URL. Copy that and add `/mcp`.
-
-Caddy is not in this setup. Caddy is a reverse proxy that terminates HTTPS for a domain you already own. Use it later, on the Oracle VM, when you have a real domain.
-
-## Run the server and the tunnel
-
-```bash
-cd remote-host
-docker compose up --build mcp tunnel
-```
-
-In the `tunnel` logs, find a line like:
-
-```text
-https://something-random.trycloudflare.com
-```
-
-The MCP URL is that host plus `/mcp`:
-
-```text
-https://something-random.trycloudflare.com/mcp
-```
-
-LAN-only alternative (no tunnel): `http://YOUR_LAN_IP:8000/mcp`
-
-## Point the Next.js client at it
-
-```bash
-cd web
-cp .env.example .env.local
-# set MCP_SERVER_URL to the URL you copied
-npm install
-npm run dev
-```
-
-Open http://localhost:3000. The page lists tools and can call `add_numbers` and `say_hello`.
-
-`MCP_SERVER_URL` is read on the server, not in the browser. Restart `npm run dev` after you change it.
-
-## Run the web app in Docker too
-
-```bash
-# from remote-host/, after you know the public URL
-MCP_SERVER_URL=https://something-random.trycloudflare.com/mcp docker compose up --build web
-```
-
-If the web container is on the same Compose network and you do not need a public URL, leave the default: `http://mcp:8000/mcp`.
+The `tunnel` service is the ngrok stand-in (`cloudflared`, no account). Caddy is not here. Caddy is a reverse proxy that terminates HTTPS for a domain you already own.
