@@ -12,7 +12,7 @@ We build everything from scratch and grow this repo step-by-step with every lect
 
 ```
 mcp-learning-journey/
-├── python-server/          # Python MCP servers (FastMCP)
+├── python-server/          # Python MCP server, client, and chatbot host
 ├── typescript-server/      # TypeScript / Node.js MCP servers
 ├── docs/                   # Notes, architecture diagrams, resources
 ├── notes/                  # Personal learning notes from each lecture
@@ -45,10 +45,17 @@ cd mcp-learning-journey
 cd python-server
 uv venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
-uv add mcp
+uv sync
 ```
 
-### 3. TypeScript Server Setup (later)
+### 3. Run the client demo
+```bash
+uv run python client.py
+```
+
+`client.py` starts `hello_world.py` as a separate process and calls its tools over stdio. It does not import the server functions.
+
+### 4. TypeScript Server Setup (later)
 ```bash
 cd typescript-server
 npm init -y
@@ -61,12 +68,12 @@ npm install @modelcontextprotocol/sdk zod
 
 | # | Topic | Status | Folder |
 |---|-------|--------|--------|
-| 1 | Environment Setup & First Hello World Server | 🟡 In Progress | `python-server/` |
-| 2 | Tools | ⬜ Pending | |
-| 3 | Resources | ⬜ Pending | |
-| 4 | Prompts | ⬜ Pending | |
-| 5 | Transports (stdio vs Streamable HTTP) | ⬜ Pending | |
-| 6 | Clients | ⬜ Pending | |
+| 1 | Environment Setup & First Hello World Server | ✅ Done | `python-server/` |
+| 2 | Tools | ✅ Done | `python-server/hello_world.py` |
+| 3 | Resources | ✅ Done | `python-server/hello_world.py` |
+| 4 | Prompts | ✅ Done | `python-server/hello_world.py` |
+| 5 | Transports (stdio vs Streamable HTTP) | 🟡 stdio only | `python-server/client.py` |
+| 6 | Clients | ✅ Done | `python-server/client.py` |
 | 7 | Debugging with MCP Inspector | ⬜ Pending | |
 | 8 | Security & OAuth | ⬜ Pending | |
 | 9 | Deployment (Docker / Cloudflare / AWS) | ⬜ Pending | |
