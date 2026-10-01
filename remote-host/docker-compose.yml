@@ -1,0 +1,25 @@
+services:
+  mcp:
+    build: ./server
+    ports:
+      - "8000:8000"
+    environment:
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8000"
+
+  # ngrok stand-in. No account. Prints a public https URL in the logs.
+  # Copy it and append /mcp, then put that in the web app's MCP_SERVER_URL.
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --url http://mcp:8000
+    depends_on:
+      - mcp
+
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      MCP_SERVER_URL: ${MCP_SERVER_URL:-http://mcp:8000/mcp}
+    depends_on:
+      - mcp
